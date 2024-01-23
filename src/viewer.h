@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef OCCVIEWERWIDGET_H
-#define OCCVIEWERWIDGET_H
-
 #include <AIS_InteractiveContext.hxx>
 #include <QWidget>
 #include <V3d_View.hxx>
@@ -24,6 +21,8 @@ protected:
 private:
     Handle(AIS_InteractiveContext) myInteractiveContext;
     Handle(V3d_View) myView;
-};
 
-#endif // OCCVIEWERWIDGET_H
+    // QWidget interface
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+};

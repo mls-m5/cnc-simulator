@@ -34,6 +34,10 @@ Viewer::Viewer(QWidget *parent)
     myView->MustBeResized();
     myView->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08);
     myView->ZBufferTriedronSetup();
+
+    setMinimumHeight(200);
+    setMinimumWidth(400);
+
     myView->Redraw();
 }
 
@@ -55,4 +59,14 @@ void Viewer::paintEvent(QPaintEvent *event) {
         return;
     }
     myView->Redraw();
+}
+
+void Viewer::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+
+    if (!myView.IsNull()) {
+        myView->MustBeResized();
+        myView->Redraw();
+        myView->FitAll(); // Adjust the camera to fit the entire model
+    }
 }

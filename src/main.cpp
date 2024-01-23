@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     mainWindow.setCentralWidget(viewerWidget);
 
     // Create the bottle shape using your function
-    TopoDS_Shape bottleShape = MakeBottle(10, 10, 10);
+    TopoDS_Shape bottleShape = MakeBottle(4, 10, 10);
 
     // Display the shape
     viewerWidget->displayShape(bottleShape);
