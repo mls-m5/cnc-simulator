@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.23)
-project(nc-sim)
+project(cnc-sim)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(CMAKE_AUTOMOC ON)
@@ -8,10 +8,9 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 add_executable(
-    nc-sim
+    cnc-sim
     src/main.cpp
     src/makebottle.cpp
-    src/showwindow.cpp
     src/viewer.cpp
     )
 
@@ -30,14 +29,14 @@ find_package(OpenCASCADE REQUIRED)
 include_directories(${OpenCASCADE_INCLUDE_DIR})
 
 target_compile_features(
-    nc-sim
+    cnc-sim
     PRIVATE
     cxx_std_17
     )
 
 find_package(Threads)
 target_link_libraries(
-    nc-sim
+    cnc-sim
     PRIVATE
     ${CMAKE_THREAD_LIBS_INIT}
     TKernel TKGeomBase TKPrim TKSTEP TKSTEPBase TKSTEPAttr TKSTEP209
