@@ -12,6 +12,7 @@ add_executable(
     src/main.cpp
     src/makebottle.cpp
     src/viewer.cpp
+    src/step.cpp
     )
 
 find_package(X11 REQUIRED)
@@ -22,6 +23,11 @@ find_package(OpenCASCADE REQUIRED)
 
 # Include directories for Open CASCADE
 include_directories(${OpenCASCADE_INCLUDE_DIR})
+
+file(
+    COPY data
+    DESTINATION .
+)
 
 target_compile_features(
     cnc-sim

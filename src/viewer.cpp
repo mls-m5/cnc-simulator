@@ -20,21 +20,24 @@ Viewer::Viewer(QWidget *parent)
     viewer->SetDefaultLights();
     viewer->SetLightOn();
 
-    myInteractiveContext = new AIS_InteractiveContext(viewer);
-    myView = viewer->CreateView();
+    _interactiveContext = new AIS_InteractiveContext(viewer);
+    _view = viewer->CreateView();
 
     // Create a window and bind it to this widget
     Handle(Xw_Window) xwWindow =
         new Xw_Window(displayConnection, (Window)winId());
-    myView->SetWindow(xwWindow);
+    _view->SetWindow(xwWindow);
 
     if (!xwWindow->IsMapped()) {
         xwWindow->Map();
     }
 
-    myView->MustBeResized();
-    myView->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08);
-    myView->ZBufferTriedronSetup();
+    _view->MustBeResized();
+    _view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08);
+    _view->ZBufferTriedronSetup();
+
+    // _view->SetDefaultLights();
+    // _view->SetLightOn();
 
     setMinimumHeight(200);
     setMinimumWidth(400);
@@ -53,24 +56,22 @@ void Viewer::displayShape(const TopoDS_Shape &shape) {
     // Display the shape in the interactive context
     Handle(AIS_Shape) aisShape = new AIS_Shape(shape);
 
-    // Set the display mode to shaded (solid rendering)
-    myInteractiveContext->SetDisplayMode(aisShape, AIS_Shaded, Standard_True);
+    _interactiveContext->Display(aisShape, Standard_True);
+    _interactiveContext->SetDisplayMode(aisShape, AIS_Shaded, Standard_True);
 
-    myInteractiveContext->Display(aisShape, Standard_True);
-
-    myView->FitAll();
-    myView->ZFitAll();
-    myView->MustBeResized();
+    _view->FitAll();
+    _view->ZFitAll();
+    _view->MustBeResized();
 }
 
 void Viewer::paintEvent(QPaintEvent *event) {
 
     QWidget::paintEvent(event);
-    if (myView.IsNull()) {
+    if (_view.IsNull()) {
         return;
     }
     // myView->Redraw();
-    myView->Update(); // Trigger redraw
+    _view->Update(); // Trigger redraw
 
     std::cout << "draw" << std::endl;
 }
@@ -78,8 +79,8 @@ void Viewer::paintEvent(QPaintEvent *event) {
 void Viewer::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
-    if (!myView.IsNull()) {
-        myView->FitAll(); // Adjust the camera to fit the entire model
-        myView->MustBeResized();
+    if (!_view.IsNull()) {
+        _view->FitAll(); // Adjust the camera to fit the entire model
+        _view->MustBeResized();
     }
 }

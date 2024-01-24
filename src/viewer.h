@@ -14,13 +14,16 @@ public:
     // Function to set the shape to be displayed
     void displayShape(const TopoDS_Shape &shape);
 
-protected:
+    Handle(AIS_InteractiveContext) interactiveContext() {
+        return _interactiveContext;
+    }
+
     // Override the QWidget's paint event
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    Handle(AIS_InteractiveContext) myInteractiveContext;
-    Handle(V3d_View) myView;
+    Handle(AIS_InteractiveContext) _interactiveContext;
+    Handle(V3d_View) _view;
 
     // QWidget interface
 protected:
