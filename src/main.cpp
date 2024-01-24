@@ -1,3 +1,4 @@
+#include "assembly.h"
 #include "makebottle.h" // Include your makebottle header
 #include "step.h"
 #include "viewer.h"
@@ -31,17 +32,27 @@ int main(int argc, char *argv[]) {
     // Create the bottle shape using your function
     TopoDS_Shape bottleShape = MakeBottle(10, 10, 10);
 
-    try {
-        TopoDS_Shape machineShape =
-            loadStepFile(getStepFile(), viewer->interactiveContext());
-        // Now you can use myShape as needed, for example, display it in your
-        // viewer
-        viewer->displayShape(machineShape);
-    }
-    catch (const std::runtime_error &e) {
-        std::cerr << e.what() << std::endl;
-        std::terminate();
-    }
+    auto machineShape = [] {
+        try {
+            return loadStepFile(getStepFile());
+        }
+        catch (const std::runtime_error &e) {
+            std::cerr << e.what() << std::endl;
+            std::terminate();
+        }
+    }();
+
+    auto assembly =
+        splitIntoAssembly(machineShape, viewer->interactiveContext());
+    // viewer->displayShape(assembly.getCompoundShape());
+    viewer->displayShape(bottleShape);
+
+    double value = 0;
+    viewer->paintCallback([&]() {
+        value += .1;
+        assembly.setAxis({{value, value, value, value, value}});
+        assembly.updateAxis();
+    });
 
     mainWindow.show();
 

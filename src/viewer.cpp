@@ -17,12 +17,17 @@ Viewer::Viewer(QWidget *parent)
         new Aspect_DisplayConnection();
     Handle(OpenGl_GraphicDriver) graphicDriver =
         new OpenGl_GraphicDriver(displayConnection, false);
+
     Handle(V3d_Viewer) viewer = new V3d_Viewer(graphicDriver);
     viewer->SetDefaultLights();
     viewer->SetLightOn();
 
+    gp_Dir upDirection(0, 1, 0); // Y-axis
+
     _interactiveContext = new AIS_InteractiveContext(viewer);
     _view = viewer->CreateView();
+    _view->Camera()->SetUp(upDirection);
+    _view->Camera()->SetEye({-1, 1, -1});
 
     // Create a window and bind it to this widget
     Handle(Xw_Window) xwWindow =
@@ -37,9 +42,6 @@ Viewer::Viewer(QWidget *parent)
     _view->TriedronDisplay(Aspect_TOTP_LEFT_LOWER, Quantity_NOC_GOLD, 0.08);
     _view->ZBufferTriedronSetup();
 
-    // _view->SetDefaultLights();
-    // _view->SetLightOn();
-
     setMinimumHeight(200);
     setMinimumWidth(400);
 
@@ -51,7 +53,7 @@ Viewer::Viewer(QWidget *parent)
                                              // should not be drawn
 
     connect(&_timer, SIGNAL(timeout()), this, SLOT(onTimer()));
-    _timer.start(16); // Approximately 60 frames per second
+    _timer.start(56); // Approximately 60 frames per second
 }
 
 Viewer::~Viewer() {}
@@ -61,7 +63,7 @@ void Viewer::displayShape(const TopoDS_Shape &shape) {
     Handle(AIS_Shape) aisShape = new AIS_Shape(shape);
 
     _interactiveContext->Display(aisShape, Standard_True);
-    _interactiveContext->SetDisplayMode(aisShape, AIS_Shaded, Standard_True);
+    // _interactiveContext->SetDisplayMode(aisShape, AIS_Shaded, Standard_True);
 
     _view->FitAll();
     _view->ZFitAll();
@@ -69,7 +71,9 @@ void Viewer::displayShape(const TopoDS_Shape &shape) {
 }
 
 void Viewer::paintEvent(QPaintEvent *event) {
-
+    if (_paintCallback) {
+        _paintCallback();
+    }
     // Prevent Qt from automatically clearing the widget's area
     event->ignore();
 
@@ -77,14 +81,16 @@ void Viewer::paintEvent(QPaintEvent *event) {
     if (_view.IsNull()) {
         return;
     }
-    _view->Redraw();
 
     gp_Trsf rotation = {};
-    rotation.SetRotation(gp::OZ(),
-                         1 * M_PI / 180.0); // Rotate around Z-axis
+    const double rotationSpeed = 0;
+    rotation.SetRotation(gp::OY(),
+                         rotationSpeed * M_PI / 180.0); // Rotate around Z-axis
 
     // If rotating the entire view
     _view->Camera()->Transform(rotation);
+
+    // _view->Redraw();
 }
 
 void Viewer::onTimer() {

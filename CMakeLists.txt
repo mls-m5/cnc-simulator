@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16)
 project(cnc-sim)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
@@ -13,6 +13,7 @@ add_executable(
     src/makebottle.cpp
     src/viewer.cpp
     src/step.cpp
+    src/assembly.cpp
     )
 
 find_package(X11 REQUIRED)
