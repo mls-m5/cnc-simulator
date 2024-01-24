@@ -1,6 +1,7 @@
 #pragma once
 
 #include <AIS_InteractiveContext.hxx>
+#include <QTimer>
 #include <QWidget>
 #include <V3d_View.hxx>
 
@@ -21,9 +22,15 @@ public:
     // Override the QWidget's paint event
     void paintEvent(QPaintEvent *event) override;
 
+private slots:
+    void onTimer();
+
 private:
     Handle(AIS_InteractiveContext) _interactiveContext;
     Handle(V3d_View) _view;
+
+    QTimer _timer;
+    // float _angle = 0; // test
 
     // QWidget interface
 protected:

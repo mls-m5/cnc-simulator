@@ -3,6 +3,7 @@
 #include <Aspect_Handle.hxx>
 #include <Graphic3d_GraphicDriver.hxx>
 #include <OpenGl_GraphicDriver.hxx>
+#include <QPaintEvent>
 // #include <WNT_Window.hxx> // Only windows
 #include <AIS_Shape.hxx>
 #include <X11/Xlib.h> // Only linux
@@ -48,6 +49,9 @@ Viewer::Viewer(QWidget *parent)
                                              // completely opaque
     setAttribute(Qt::WA_NoSystemBackground); // Indicate the system background
                                              // should not be drawn
+
+    connect(&_timer, SIGNAL(timeout()), this, SLOT(onTimer()));
+    _timer.start(16); // Approximately 60 frames per second
 }
 
 Viewer::~Viewer() {}
@@ -66,14 +70,25 @@ void Viewer::displayShape(const TopoDS_Shape &shape) {
 
 void Viewer::paintEvent(QPaintEvent *event) {
 
-    QWidget::paintEvent(event);
+    // Prevent Qt from automatically clearing the widget's area
+    event->ignore();
+
+    // QWidget::paintEvent(event);
     if (_view.IsNull()) {
         return;
     }
-    // myView->Redraw();
-    _view->Update(); // Trigger redraw
+    _view->Redraw();
 
-    std::cout << "draw" << std::endl;
+    gp_Trsf rotation = {};
+    rotation.SetRotation(gp::OZ(),
+                         1 * M_PI / 180.0); // Rotate around Z-axis
+
+    // If rotating the entire view
+    _view->Camera()->Transform(rotation);
+}
+
+void Viewer::onTimer() {
+    update();
 }
 
 void Viewer::resizeEvent(QResizeEvent *event) {
