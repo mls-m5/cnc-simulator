@@ -73,7 +73,7 @@ void Viewer::paintEvent(QPaintEvent *event) {
     // Prevent Qt from automatically clearing the widget's area
     event->ignore();
 
-    // QWidget::paintEvent(event);
+    QWidget::paintEvent(event);
     if (_view.IsNull()) {
         return;
     }

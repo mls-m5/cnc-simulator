@@ -30,7 +30,6 @@ private:
     Handle(V3d_View) _view;
 
     QTimer _timer;
-    // float _angle = 0; // test
 
     // QWidget interface
 protected:
