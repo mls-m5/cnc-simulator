@@ -14,16 +14,11 @@ add_executable(
     src/viewer.cpp
     )
 
-
-set(OpenCASCADE_DIR "/usr/local/lib/cmake/")
-
 find_package(X11 REQUIRED)
 include_directories(${X11_INCLUDE_DIR})
 
-
 # Find Open CASCADE package (assumes that OCCT_DIR is set)
 find_package(OpenCASCADE REQUIRED)
-
 
 # Include directories for Open CASCADE
 include_directories(${OpenCASCADE_INCLUDE_DIR})
