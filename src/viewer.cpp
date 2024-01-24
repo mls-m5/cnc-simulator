@@ -3,10 +3,11 @@
 #include <Aspect_Handle.hxx>
 #include <Graphic3d_GraphicDriver.hxx>
 #include <OpenGl_GraphicDriver.hxx>
-// #include <WNT_Window.hxx>
+// #include <WNT_Window.hxx> // Only windows
 #include <AIS_Shape.hxx>
-#include <X11/Xlib.h>
+#include <X11/Xlib.h> // Only linux
 #include <Xw_Window.hxx>
+#include <iostream>
 
 Viewer::Viewer(QWidget *parent)
     : QWidget(parent) {
@@ -38,7 +39,12 @@ Viewer::Viewer(QWidget *parent)
     setMinimumHeight(200);
     setMinimumWidth(400);
 
-    myView->Redraw();
+    setAutoFillBackground(
+        false); // Prevent the widget from filling the background automatically
+    setAttribute(Qt::WA_OpaquePaintEvent);   // Indicate that the paint event is
+                                             // completely opaque
+    setAttribute(Qt::WA_NoSystemBackground); // Indicate the system background
+                                             // should not be drawn
 }
 
 Viewer::~Viewer() {}
@@ -46,27 +52,34 @@ Viewer::~Viewer() {}
 void Viewer::displayShape(const TopoDS_Shape &shape) {
     // Display the shape in the interactive context
     Handle(AIS_Shape) aisShape = new AIS_Shape(shape);
+
+    // Set the display mode to shaded (solid rendering)
+    myInteractiveContext->SetDisplayMode(aisShape, AIS_Shaded, Standard_True);
+
     myInteractiveContext->Display(aisShape, Standard_True);
 
     myView->FitAll();
     myView->ZFitAll();
-    myView->Redraw();
+    myView->MustBeResized();
 }
 
 void Viewer::paintEvent(QPaintEvent *event) {
+
     QWidget::paintEvent(event);
     if (myView.IsNull()) {
         return;
     }
-    myView->Redraw();
+    // myView->Redraw();
+    myView->Update(); // Trigger redraw
+
+    std::cout << "draw" << std::endl;
 }
 
 void Viewer::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
 
     if (!myView.IsNull()) {
-        myView->MustBeResized();
-        myView->Redraw();
         myView->FitAll(); // Adjust the camera to fit the entire model
+        myView->MustBeResized();
     }
 }

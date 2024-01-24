@@ -17,14 +17,16 @@ int main(int argc, char *argv[]) {
 
     // Create your OpenCASCADE viewer widget
     Viewer *viewerWidget = new Viewer(&mainWindow);
+
     mainWindow.setCentralWidget(viewerWidget);
 
     // Create the bottle shape using your function
-    TopoDS_Shape bottleShape = MakeBottle(4, 10, 10);
+    TopoDS_Shape bottleShape = MakeBottle(10, 10, 10);
+
+    mainWindow.show();
 
     // Display the shape
     viewerWidget->displayShape(bottleShape);
 
-    mainWindow.show();
     return a.exec();
 }
